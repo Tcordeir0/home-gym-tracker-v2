@@ -1,11 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { Check, CalendarClock, Settings, Share2 } from 'lucide-react'
+import { Check, CalendarClock, Dices, Settings, Share2 } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { useStore, totalPoints } from '@/store'
-import { levelInfo, statsFor, ACHIEVEMENTS, QUESTS, weekStartISO } from '@/lib/game'
+import { levelInfo, statsFor, earnedAchCount, ACHIEVEMENTS, QUESTS, weekStartISO } from '@/lib/game'
 import { THEMES, ALL_THEME_IDS } from '@/lib/themes'
+import { DECORATIONS, ALL_DECORATIONS } from '@/data/decorations'
+import { playSound } from '@/lib/feedback'
+import { useToast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
+
+function DecoIcon({ id, size = 44 }: { id: string; size?: number }) {
+  return (
+    <span
+      className="inline-block [&>svg]:h-full [&>svg]:w-full"
+      style={{ width: size, height: size }}
+      dangerouslySetInnerHTML={{ __html: DECORATIONS[id].svg }}
+    />
+  )
+}
 
 const h3Cls = 'mb-2 mt-5 text-xs font-bold uppercase tracking-wider text-muted'
 
@@ -46,15 +59,46 @@ export function RewardsModal({
   const measures = useStore((s) => s.measures[s.activeId]) ?? []
   const setTheme = useStore((s) => s.setTheme)
   const claimQuests = useStore((s) => s.claimQuests)
+  const spinRoulette = useStore((s) => s.spinRoulette)
+  const setDeco = useStore((s) => s.setDeco)
+  const show = useToast((s) => s.show)
+  const [reel, setReel] = useState<string | null>(null)
+  const [spinning, setSpinning] = useState(false)
+  const reelRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (open) claimQuests()
   }, [open, claimQuests])
 
+  useEffect(() => () => { if (reelRef.current) clearInterval(reelRef.current) }, [])
+
   const pts = totalPoints(scores, activeId)
   const info = levelInfo(pts)
   const stats = statsFor(history, pts, active.freezes ?? 0)
   const freezes = active.freezes ?? 0
+  const ownedDecos = active.decos ?? []
+  const spins = Math.max(0, earnedAchCount(stats) - (active.spinsUsed ?? 0))
+
+  function spin() {
+    if (spinning) return
+    const won = spinRoulette()
+    if (!won) {
+      show(spins <= 0 ? 'Sem giros — desbloqueie conquistas' : 'Você já tem todas as decorações! 🎉')
+      return
+    }
+    setSpinning(true)
+    let n = 0
+    reelRef.current = setInterval(() => {
+      setReel(ALL_DECORATIONS[Math.floor(Math.random() * ALL_DECORATIONS.length)])
+      if (++n > 14) {
+        if (reelRef.current) clearInterval(reelRef.current)
+        setReel(won)
+        setSpinning(false)
+        playSound('win')
+        show('Ganhou: ' + DECORATIONS[won].name + '! 🎉')
+      }
+    }, 90)
+  }
 
   const wk = weekStartISO()
   const hist = history.filter((e) => e.date >= wk)
@@ -136,6 +180,51 @@ export function RewardsModal({
         {ALL_THEME_IDS.map((id) => (
           <ThemeChip key={id} id={id} equipped={active.theme === id} onPick={() => setTheme(id)} />
         ))}
+      </div>
+
+      <h3 className={h3Cls}>Roleta de decorações</h3>
+      <div className="rounded-2xl border border-line bg-surface2 p-4 text-center">
+        <div className="mx-auto grid h-20 w-20 place-items-center">
+          {reel ? <DecoIcon id={reel} size={72} /> : <Dices size={40} className="text-muted" />}
+        </div>
+        <button
+          onClick={spin}
+          disabled={spinning}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 font-extrabold text-on-accent disabled:opacity-60"
+        >
+          <Dices size={16} /> Girar ({spins})
+        </button>
+        <p className="mt-2 text-[11px] text-muted">Cada conquista desbloqueada dá um giro.</p>
+      </div>
+
+      <h3 className={h3Cls}>Decorações do avatar</h3>
+      <div className="grid grid-cols-3 gap-2">
+        <button
+          onClick={() => setDeco(null)}
+          className={cn(
+            'flex flex-col items-center gap-1 rounded-xl border p-2 text-[11px] font-bold',
+            !active.deco ? 'border-accent text-accent' : 'border-line text-muted',
+          )}
+        >
+          <span className="grid h-11 w-11 place-items-center">—</span> Nenhuma
+        </button>
+        {ownedDecos.map((id) => (
+          <button
+            key={id}
+            onClick={() => setDeco(id)}
+            className={cn(
+              'flex flex-col items-center gap-1 rounded-xl border p-2 text-[11px] font-bold',
+              active.deco === id ? 'border-accent text-accent' : 'border-line text-fg',
+            )}
+          >
+            <DecoIcon id={id} size={44} /> {DECORATIONS[id].name}
+          </button>
+        ))}
+        {ownedDecos.length === 0 && (
+          <span className="col-span-3 rounded-xl border border-line bg-surface p-3 text-center text-xs text-muted">
+            Gire a roleta pra ganhar decorações ✨
+          </span>
+        )}
       </div>
 
       <button

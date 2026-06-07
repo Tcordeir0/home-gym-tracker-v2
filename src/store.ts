@@ -4,7 +4,8 @@ import { immer } from 'zustand/middleware/immer'
 import type { HistoryEntry, Measure, Plan, Profile, Score, Session, WorkoutKey } from '@/types'
 import { defaultProfiles } from '@/data/plans'
 import { COLORS, generatePlan } from '@/data/pool'
-import { levelFor, QUESTS, weekStartISO } from '@/lib/game'
+import { levelFor, statsFor, earnedAchCount, QUESTS, weekStartISO } from '@/lib/game'
+import { ALL_DECORATIONS } from '@/data/decorations'
 
 export const PTS_SET = 5
 export const PTS_TREINO = 50
@@ -45,6 +46,8 @@ type Actions = {
   setPlan: (plan: Plan) => void
   setFeedback: (mode: State['feedback']) => void
   resetPoints: () => void
+  spinRoulette: () => string | null
+  setDeco: (id: string | null) => void
 }
 
 export type Store = State & Actions
@@ -100,6 +103,28 @@ export const useStore = create<Store>()(
       setActive: (id) => set((s) => { s.activeId = id }),
       setFeedback: (mode) => set((s) => { s.feedback = mode }),
       resetPoints: () => set((s) => { s.scores[s.activeId] = { byDay: {} } }),
+      setDeco: (id) =>
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (p) p.deco = id
+        }),
+      spinRoulette: () => {
+        let won: string | null = null
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (!p) return
+          const stats = statsFor(s.history[p.id] ?? [], pointsOf(s, p.id), p.freezes ?? 0)
+          const used = p.spinsUsed ?? 0
+          if (earnedAchCount(stats) - used <= 0) return
+          const owned = p.decos ?? []
+          const pool = ALL_DECORATIONS.filter((d) => !owned.includes(d))
+          if (!pool.length) return
+          p.spinsUsed = used + 1
+          won = pool[Math.floor(Math.random() * pool.length)]
+          p.decos = [...owned, won]
+        })
+        return won
+      },
       clearLevelUp: () => set((s) => { s.pendingLevelUp = null }),
       setSchedule: (days, time) =>
         set((s) => {

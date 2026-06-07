@@ -34,6 +34,9 @@ export type Profile = {
   quests: Quests
   schedule?: Schedule
   cardios?: CardioType[]
+  decos?: string[] // decorações desbloqueadas
+  deco?: string | null // decoração equipada
+  spinsUsed?: number
 }
 
 export const DEFAULT_CARDIOS: CardioType[] = [
