@@ -29,11 +29,13 @@ export function HistoryModal({
   onClose,
   onOpenMeasures,
   onOpenCharts,
+  onOpenManual,
 }: {
   open: boolean
   onClose: () => void
   onOpenMeasures: () => void
   onOpenCharts: () => void
+  onOpenManual: () => void
 }) {
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
   const activeId = useStore((s) => s.activeId)
@@ -127,6 +129,12 @@ export function HistoryModal({
           <TrendingUp size={16} /> Gráficos
         </button>
       </div>
+      <button
+        onClick={onOpenManual}
+        className="mt-2 w-full rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg"
+      >
+        ＋ Registrar sessão (outra data)
+      </button>
 
       <h3 className="mb-2 mt-5 text-xs font-bold uppercase tracking-wider text-muted">Sessões registradas</h3>
       {sorted.length === 0 ? (
