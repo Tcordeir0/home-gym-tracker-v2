@@ -1,8 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { HistoryEntry, Measure, Profile, Score, Session, WorkoutKey } from '@/types'
+import type { HistoryEntry, Measure, Plan, Profile, Score, Session, WorkoutKey } from '@/types'
 import { defaultProfiles } from '@/data/plans'
+import { COLORS, generatePlan } from '@/data/pool'
 import { levelFor, QUESTS, weekStartISO } from '@/lib/game'
 
 export const PTS_SET = 5
@@ -37,6 +38,10 @@ type Actions = {
   claimQuests: () => void
   setSchedule: (days: number[], time: string) => void
   addCardio: (label: string, emoji: string) => void
+  updateProfile: (patch: Partial<Profile>) => void
+  addProfile: () => void
+  deleteProfile: (id: string) => void
+  setPlan: (plan: Plan) => void
 }
 
 export type Store = State & Actions
@@ -104,6 +109,51 @@ export const useStore = create<Store>()(
           s.history[id].push({ date: today, w: 'cardio', t: label, emoji, pts: PTS_CARDIO })
           addPointsOn(s, id, today, PTS_CARDIO)
           checkLevelUp(s)
+        }),
+
+      updateProfile: (patch) =>
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (p) Object.assign(p, patch)
+        }),
+
+      addProfile: () =>
+        set((s) => {
+          if (s.profiles.length >= 8) return
+          const id = 'u' + Date.now()
+          s.profiles.push({
+            id,
+            name: 'Novo perfil',
+            color: COLORS[s.profiles.length % COLORS.length],
+            photo: null,
+            equipment: ['bodyweight', 'dumbbell'],
+            plan: generatePlan(['bodyweight', 'dumbbell'], 'Geral'),
+            theme: 'default',
+            level: 1,
+            freezes: 0,
+            quests: { week: '', claimed: {} },
+          })
+          s.activeId = id
+        }),
+
+      deleteProfile: (id) =>
+        set((s) => {
+          if (s.profiles.length <= 1) return
+          s.profiles = s.profiles.filter((p) => p.id !== id)
+          if (s.activeId === id) s.activeId = s.profiles[0].id
+          delete s.history[id]
+          delete s.scores[id]
+          delete s.sessions[id]
+          delete s.measures[id]
+        }),
+
+      setPlan: (plan) =>
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (p) {
+            p.plan = plan
+            if (s.sessions[p.id]) s.sessions[p.id] = {}
+          }
         }),
 
       setTheme: (theme) =>
