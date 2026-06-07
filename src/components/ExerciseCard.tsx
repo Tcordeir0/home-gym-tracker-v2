@@ -47,7 +47,7 @@ export function ExerciseCard({
     )
 
   return (
-    <article className="rounded-2xl border border-line bg-surface p-4">
+    <article className="themed-surface rounded-2xl border border-line bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="font-bold leading-tight">{ex.nome}</div>
