@@ -19,6 +19,7 @@ export type Plan = {
 
 export type Quests = { week: string; claimed: Record<string, boolean> }
 export type Schedule = { days: number[]; time: string } // days: 0=Dom..6=Sáb
+export type CardioType = { label: string; emoji: string }
 
 export type Profile = {
   id: string
@@ -32,7 +33,13 @@ export type Profile = {
   freezes: number
   quests: Quests
   schedule?: Schedule
+  cardios?: CardioType[]
 }
+
+export const DEFAULT_CARDIOS: CardioType[] = [
+  { label: 'Corrida', emoji: '🏃' },
+  { label: 'Natação', emoji: '🏊' },
+]
 
 /** Uma série lançada: feita? com quanta carga e reps. */
 export type SetState = { done: boolean; kg?: number; reps?: number }

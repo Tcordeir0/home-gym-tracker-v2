@@ -7,6 +7,7 @@ import { levelFor, QUESTS, weekStartISO } from '@/lib/game'
 
 export const PTS_SET = 5
 export const PTS_TREINO = 50
+export const PTS_CARDIO = 30
 
 export function todayISO(): string {
   const d = new Date()
@@ -35,6 +36,7 @@ type Actions = {
   clearLevelUp: () => void
   claimQuests: () => void
   setSchedule: (days: number[], time: string) => void
+  addCardio: (label: string, emoji: string) => void
 }
 
 export type Store = State & Actions
@@ -92,6 +94,16 @@ export const useStore = create<Store>()(
         set((s) => {
           const p = s.profiles.find((x) => x.id === s.activeId)
           if (p) p.schedule = { days, time }
+        }),
+
+      addCardio: (label, emoji) =>
+        set((s) => {
+          const id = s.activeId
+          s.history[id] ??= []
+          const today = todayISO()
+          s.history[id].push({ date: today, w: 'cardio', t: label, emoji, pts: PTS_CARDIO })
+          addPointsOn(s, id, today, PTS_CARDIO)
+          checkLevelUp(s)
         }),
 
       setTheme: (theme) =>

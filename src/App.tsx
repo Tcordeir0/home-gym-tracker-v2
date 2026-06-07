@@ -11,6 +11,7 @@ import { ChartsModal } from '@/components/ChartsModal'
 import { RewardsModal } from '@/components/RewardsModal'
 import { AgendaModal } from '@/components/AgendaModal'
 import { TodayBanner } from '@/components/TodayBanner'
+import { CardioBar } from '@/components/CardioBar'
 import { LevelUpBurst } from '@/components/LevelUpBurst'
 import { Toaster } from '@/components/ui/Toaster'
 
@@ -41,6 +42,7 @@ export default function App() {
         onOpenCloud={() => setCloudOpen(true)}
       />
       <TodayBanner />
+      <CardioBar />
       <main className="mt-4">
         <WorkoutScreen />
       </main>
