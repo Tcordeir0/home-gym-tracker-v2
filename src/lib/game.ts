@@ -81,6 +81,10 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'pts1000', icon: Award, label: '1000 pontos', desc: '1000 pts', test: (s) => s.pts >= 1000, milestone: true },
 ]
 
+export function earnedAchCount(stats: Stats): number {
+  return ACHIEVEMENTS.filter((a) => a.test(stats)).length
+}
+
 /* ---------- Quests semanais ---------- */
 export function weekStartISO() {
   const d = new Date()
