@@ -1,19 +1,23 @@
-import { CalendarDays, Sparkles, Star } from 'lucide-react'
+import { CalendarDays, Cloud, Sparkles, Star } from 'lucide-react'
 import { useStore, totalPoints } from '@/store'
+import { useAuth } from '@/lib/sync'
 import { levelFor } from '@/lib/game'
 import { cn } from '@/lib/utils'
 
 export function Header({
   onOpenHistory,
   onOpenRewards,
+  onOpenCloud,
 }: {
   onOpenHistory: () => void
   onOpenRewards: () => void
+  onOpenCloud: () => void
 }) {
   const profiles = useStore((s) => s.profiles)
   const activeId = useStore((s) => s.activeId)
   const scores = useStore((s) => s.scores)
   const setActive = useStore((s) => s.setActive)
+  const synced = useAuth((s) => !!s.email)
   const active = profiles.find((p) => p.id === activeId)!
   const pts = totalPoints(scores, activeId)
 
@@ -24,6 +28,16 @@ export function Header({
           Home <span className="text-accent">Gym</span>
         </h1>
         <div className="flex gap-2">
+          <button
+            onClick={onOpenCloud}
+            aria-label="Sincronização"
+            className={cn(
+              'grid h-10 w-10 place-items-center rounded-full border bg-surface',
+              synced ? 'border-accent text-accent' : 'border-line text-fg',
+            )}
+          >
+            <Cloud size={18} />
+          </button>
           <button
             onClick={onOpenRewards}
             aria-label="Recompensas"
