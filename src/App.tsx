@@ -16,6 +16,7 @@ import { SettingsModal } from '@/components/SettingsModal'
 import { ShareModal } from '@/components/ShareModal'
 import { TodayBanner } from '@/components/TodayBanner'
 import { CardioBar } from '@/components/CardioBar'
+import { DemoModal } from '@/components/DemoModal'
 import { LevelUpBurst } from '@/components/LevelUpBurst'
 import { Toaster } from '@/components/ui/Toaster'
 
@@ -86,6 +87,7 @@ export default function App() {
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
       <CloudModal open={cloudOpen} onClose={() => setCloudOpen(false)} />
+      <DemoModal />
       <LevelUpBurst />
       <Toaster />
     </div>

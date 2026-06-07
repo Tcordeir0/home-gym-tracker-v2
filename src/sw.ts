@@ -13,6 +13,21 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(self.clients.claim())
 })
 
+// cache-first das imagens de demonstração (offline depois da 1ª vez)
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url)
+  if (event.request.method !== 'GET' || !url.pathname.includes('/demos/')) return
+  event.respondWith(
+    caches.open('hg-demos').then(async (cache) => {
+      const hit = await cache.match(event.request)
+      if (hit) return hit
+      const res = await fetch(event.request)
+      if (res.ok) cache.put(event.request, res.clone())
+      return res
+    }),
+  )
+})
+
 type PushPayload = { title?: string; body?: string; tag?: string; url?: string }
 function parsePayload(event: PushEvent): PushPayload {
   try {
