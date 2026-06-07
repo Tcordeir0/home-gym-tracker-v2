@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { HistoryEntry, Profile, Score, Session, WorkoutKey } from '@/types'
+import type { HistoryEntry, Measure, Profile, Score, Session, WorkoutKey } from '@/types'
 import { defaultProfiles } from '@/data/plans'
 
 export const PTS_SET = 5
@@ -18,6 +18,7 @@ type State = {
   history: Record<string, HistoryEntry[]>
   scores: Record<string, Score>
   sessions: Record<string, Record<string, Session>>
+  measures: Record<string, Measure[]>
 }
 
 type Actions = {
@@ -27,6 +28,8 @@ type Actions = {
   setSetValue: (w: WorkoutKey, exIdx: number, setIdx: number, field: 'kg' | 'reps', value: number | undefined) => void
   concludeWorkout: (w: 'A' | 'B' | 'C') => 'ok' | 'dup'
   deleteEntry: (profileId: string, index: number) => void
+  addMeasure: (m: Measure) => void
+  deleteMeasure: (profileId: string, index: number) => void
 }
 
 export type Store = State & Actions
@@ -58,6 +61,7 @@ export const useStore = create<Store>()(
       history: {},
       scores: {},
       sessions: {},
+      measures: {},
 
       setActive: (id) => set((s) => { s.activeId = id }),
 
@@ -128,6 +132,17 @@ export const useStore = create<Store>()(
           const removed = list[index]
           list.splice(index, 1)
           addPointsOn(s, profileId, removed.date, -(removed.pts ?? 0))
+        }),
+
+      addMeasure: (m) =>
+        set((s) => {
+          s.measures[s.activeId] ??= []
+          s.measures[s.activeId].push(m)
+        }),
+
+      deleteMeasure: (profileId, index) =>
+        set((s) => {
+          s.measures[profileId]?.splice(index, 1)
         }),
     })),
     { name: 'home-gym-v2' },

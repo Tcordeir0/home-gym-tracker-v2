@@ -52,3 +52,14 @@ export type HistoryEntry = {
 }
 
 export type Score = { byDay: Record<string, number> }
+
+export type Measure = {
+  date: string // YYYY-MM-DD
+  weight?: number
+  arm?: number
+  chest?: number
+  waist?: number
+  photo?: string // base64 (data URL)
+}
+
+export type MeasureField = 'weight' | 'arm' | 'chest' | 'waist'

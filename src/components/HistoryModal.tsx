@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, Flame } from 'lucide-react'
+import { Trash2, Flame, Ruler, TrendingUp } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { useStore, totalPoints, todayISO } from '@/store'
 import { cn } from '@/lib/utils'
@@ -40,7 +40,17 @@ function Stat({ value, label }: { value: number | string; label: string }) {
   )
 }
 
-export function HistoryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function HistoryModal({
+  open,
+  onClose,
+  onOpenMeasures,
+  onOpenCharts,
+}: {
+  open: boolean
+  onClose: () => void
+  onOpenMeasures: () => void
+  onOpenCharts: () => void
+}) {
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
   const activeId = useStore((s) => s.activeId)
   const history = useStore((s) => s.history[s.activeId]) ?? []
@@ -117,6 +127,21 @@ export function HistoryModal({ open, onClose }: { open: boolean; onClose: () => 
             )
           })}
         </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          onClick={onOpenMeasures}
+          className="flex items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg"
+        >
+          <Ruler size={16} /> Medidas
+        </button>
+        <button
+          onClick={onOpenCharts}
+          className="flex items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg"
+        >
+          <TrendingUp size={16} /> Gráficos
+        </button>
       </div>
 
       <h3 className="mb-2 mt-5 text-xs font-bold uppercase tracking-wider text-muted">Sessões registradas</h3>
