@@ -55,11 +55,11 @@ const KEYS: Array<[keyof ThemeVars, string]> = [
   ['text', '--text'], ['muted', '--muted'], ['accent', '--accent'], ['onAccent', '--on-accent'],
 ]
 
-/* Estilo de textura ambiente por tema (mostra sutil no fundo, atrás dos cards). */
-type TexStyle = 'dots' | 'grid' | 'scanline' | 'grain' | 'stars' | 'speckle'
+/* Estilo de textura por tema (no fundo + nos cards). Cada tema tem uma "cara". */
+type TexStyle = 'dots' | 'grid' | 'scanline' | 'grain' | 'stars' | 'speckle' | 'grass' | 'embers'
 const TEX_STYLE: Record<string, TexStyle> = {
-  default: 'dots', blocos: 'speckle', neon: 'grid', monstros: 'speckle', cinza: 'grain',
-  lava: 'speckle', oceano: 'dots', dourado: 'speckle', vaporwave: 'grid', hq: 'dots',
+  default: 'dots', blocos: 'grass', neon: 'grid', monstros: 'speckle', cinza: 'grain',
+  lava: 'embers', oceano: 'dots', dourado: 'speckle', vaporwave: 'grid', hq: 'dots',
   cyber: 'scanline', noir: 'grain', cosmico: 'stars', anime: 'dots',
 }
 
@@ -74,13 +74,10 @@ function buildTexture(style: TexStyle, c: string): string {
     case 'grid':
       return svg(`<path d='M34 0H0V34' fill='none' stroke='${c}' stroke-width='1'/>`, 34, 34)
     case 'scanline':
-      return svg(`<rect width='6' height='1.2' fill='${c}'/>`, 6, 6)
+      return svg(`<rect width='6' height='1.4' fill='${c}'/>`, 6, 5)
     case 'grain':
       return svg(
-        [
-          [4, 7], [11, 2], [19, 14], [27, 5], [33, 22], [8, 25], [22, 30], [16, 9],
-          [30, 33], [2, 18], [25, 19], [13, 35], [36, 12], [6, 34],
-        ]
+        [[4, 7], [11, 2], [19, 14], [27, 5], [33, 22], [8, 25], [22, 30], [16, 9], [30, 33], [2, 18], [25, 19], [13, 35], [36, 12], [6, 34]]
           .map(([x, y]) => `<rect x='${x}' y='${y}' width='1.4' height='1.4' fill='${c}'/>`)
           .join(''),
         40, 40,
@@ -95,6 +92,16 @@ function buildTexture(style: TexStyle, c: string): string {
         `<rect x='5' y='8' width='2' height='2' fill='${c}'/><rect x='18' y='4' width='2' height='2' fill='${c}'/><rect x='12' y='20' width='2' height='2' fill='${c}'/><rect x='24' y='24' width='2' height='2' fill='${c}'/><rect x='28' y='12' width='2' height='2' fill='${c}'/>`,
         32, 32,
       )
+    case 'grass': // bloco de grama (Minecraft) — pixels densos
+      return svg(
+        `<g fill='${c}'><rect x='0' y='0' width='2' height='2'/><rect x='4' y='1' width='2' height='2'/><rect x='8' y='0' width='2' height='2'/><rect x='12' y='1' width='2' height='2'/><rect x='2' y='4' width='2' height='2'/><rect x='6' y='5' width='2' height='2'/><rect x='10' y='4' width='2' height='2'/><rect x='14' y='5' width='2' height='2'/><rect x='0' y='8' width='2' height='2'/><rect x='4' y='9' width='2' height='2'/><rect x='8' y='8' width='2' height='2'/><rect x='12' y='9' width='2' height='2'/><rect x='2' y='12' width='2' height='2'/><rect x='6' y='13' width='2' height='2'/><rect x='10' y='12' width='2' height='2'/><rect x='14' y='13' width='2' height='2'/></g>`,
+        16, 16,
+      )
+    case 'embers': // brasas da lava
+      return svg(
+        `<g fill='${c}'><circle cx='6' cy='8' r='1.6'/><circle cx='20' cy='5' r='1'/><circle cx='14' cy='18' r='2'/><circle cx='26' cy='22' r='1.2'/><circle cx='30' cy='10' r='1'/><circle cx='4' cy='26' r='1.4'/><circle cx='22' cy='30' r='1.6'/></g>`,
+        34, 34,
+      )
   }
 }
 
@@ -102,5 +109,11 @@ export function applyTheme(id: string) {
   const theme = THEMES[id] ?? THEMES.default
   const root = document.documentElement.style
   for (const [k, cssVar] of KEYS) root.setProperty(cssVar, theme.vars[k])
-  root.setProperty('--tex', buildTexture(TEX_STYLE[id] ?? 'dots', theme.vars.accent))
+  const tex = buildTexture(TEX_STYLE[id] ?? 'dots', theme.vars.accent)
+  root.setProperty('--tex', tex)
+  // textura mais visível nos cards (estilo do tema com relevo, mantendo leitura)
+  root.setProperty(
+    '--card-veil',
+    `color-mix(in srgb, ${theme.vars.surface} ${id === 'default' ? '90%' : '82%'}, transparent)`,
+  )
 }

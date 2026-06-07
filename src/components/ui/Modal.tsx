@@ -53,7 +53,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
           }}
         >
           <motion.div
-            className="max-h-[90dvh] w-full max-w-xl overflow-x-hidden overflow-y-auto rounded-t-3xl border border-line bg-bg p-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] [overscroll-behavior:contain]"
+            className="themed-surface max-h-[90dvh] w-full max-w-xl overflow-x-hidden overflow-y-auto rounded-t-3xl border border-line bg-bg p-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] [overscroll-behavior:contain]"
             initial={{ y: 48 }}
             animate={{ y: 0 }}
             exit={{ y: 48 }}

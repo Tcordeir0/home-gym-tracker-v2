@@ -58,6 +58,13 @@ body::before {
   pointer-events: none;
 }
 
+/* superfície com a textura/arte do tema (relevo nos cards, mantendo leitura) */
+.themed-surface {
+  background-image:
+    linear-gradient(var(--card-veil, transparent), var(--card-veil, transparent)),
+    var(--tex);
+}
+
 /* sem setinhas nos inputs numéricos (kg/reps) */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
