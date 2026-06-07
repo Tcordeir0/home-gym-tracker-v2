@@ -1,21 +1,21 @@
-import { CalendarDays, Palette, Star } from 'lucide-react'
+import { CalendarDays, Sparkles, Star } from 'lucide-react'
 import { useStore, totalPoints } from '@/store'
-import { THEMES } from '@/lib/themes'
+import { levelFor } from '@/lib/game'
 import { cn } from '@/lib/utils'
 
-export function Header({ onOpenHistory }: { onOpenHistory: () => void }) {
+export function Header({
+  onOpenHistory,
+  onOpenRewards,
+}: {
+  onOpenHistory: () => void
+  onOpenRewards: () => void
+}) {
   const profiles = useStore((s) => s.profiles)
   const activeId = useStore((s) => s.activeId)
   const scores = useStore((s) => s.scores)
   const setActive = useStore((s) => s.setActive)
-  const setTheme = useStore((s) => s.setTheme)
   const active = profiles.find((p) => p.id === activeId)!
-
-  function cycleTheme() {
-    const ids = Object.keys(THEMES)
-    const next = ids[(ids.indexOf(active.theme) + 1) % ids.length]
-    setTheme(next)
-  }
+  const pts = totalPoints(scores, activeId)
 
   return (
     <header className="pt-[calc(env(safe-area-inset-top)+1rem)]">
@@ -25,11 +25,11 @@ export function Header({ onOpenHistory }: { onOpenHistory: () => void }) {
         </h1>
         <div className="flex gap-2">
           <button
-            onClick={cycleTheme}
-            aria-label="Trocar tema"
+            onClick={onOpenRewards}
+            aria-label="Recompensas"
             className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-fg"
           >
-            <Palette size={18} />
+            <Sparkles size={18} />
           </button>
           <button
             onClick={onOpenHistory}
@@ -63,9 +63,12 @@ export function Header({ onOpenHistory }: { onOpenHistory: () => void }) {
       </div>
 
       <div className="mt-3 text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-1.5 font-display text-base text-accent">
-          <Star size={15} /> {totalPoints(scores, activeId)} pts
-        </span>
+        <button
+          onClick={onOpenRewards}
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-1.5 font-display text-base text-accent"
+        >
+          <Star size={15} /> Nv.{levelFor(pts)} · {pts} pts
+        </button>
       </div>
 
       <p className="mt-3 text-sm text-muted">

@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Trash2, Flame, Ruler, TrendingUp } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { useStore, totalPoints, todayISO } from '@/store'
+import { statsFor } from '@/lib/game'
 import { cn } from '@/lib/utils'
-import type { HistoryEntry } from '@/types'
 
 const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 const DOW = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
@@ -15,22 +15,6 @@ function fmtDate(s: string) {
   const p = s.split('-')
   return `${p[2]}/${p[1]}/${p[0]}`
 }
-function streakOf(history: HistoryEntry[]) {
-  const days = new Set(history.map((e) => e.date))
-  let streak = 0
-  const cur = new Date()
-  for (let i = 0; i < 400; i++) {
-    const ds = iso(cur)
-    if (days.has(ds)) {
-      streak++
-      cur.setDate(cur.getDate() - 1)
-    } else if (i === 0) {
-      cur.setDate(cur.getDate() - 1)
-    } else break
-  }
-  return streak
-}
-
 function Stat({ value, label }: { value: number | string; label: string }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-2xl border border-line bg-surface px-2 py-3.5 text-center">
@@ -65,7 +49,7 @@ export function HistoryModal({
   weekAgo.setDate(weekAgo.getDate() - 6)
   const weekAgoStr = iso(weekAgo)
   const weekCount = history.filter((e) => e.date >= weekAgoStr).length
-  const streak = streakOf(history)
+  const streak = statsFor(history, 0, active.freezes ?? 0).streak
 
   const y = today.getFullYear()
   const m = today.getMonth()

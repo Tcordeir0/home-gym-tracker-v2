@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { HistoryEntry, Measure, Profile, Score, Session, WorkoutKey } from '@/types'
 import { defaultProfiles } from '@/data/plans'
+import { levelFor, QUESTS, weekStartISO } from '@/lib/game'
 
 export const PTS_SET = 5
 export const PTS_TREINO = 50
@@ -19,6 +20,7 @@ type State = {
   scores: Record<string, Score>
   sessions: Record<string, Record<string, Session>>
   measures: Record<string, Measure[]>
+  pendingLevelUp: number | null
 }
 
 type Actions = {
@@ -30,6 +32,8 @@ type Actions = {
   deleteEntry: (profileId: string, index: number) => void
   addMeasure: (m: Measure) => void
   deleteMeasure: (profileId: string, index: number) => void
+  clearLevelUp: () => void
+  claimQuests: () => void
 }
 
 export type Store = State & Actions
@@ -53,6 +57,23 @@ function addPointsOn(s: State, profileId: string, date: string, n: number) {
   s.scores[profileId].byDay[date] = Math.max(0, (s.scores[profileId].byDay[date] ?? 0) + n)
 }
 
+function pointsOf(s: State, id: string) {
+  const sc = s.scores[id]
+  return sc ? Object.values(sc.byDay).reduce((a, b) => a + b, 0) : 0
+}
+
+/** Detecta subida de nível do perfil ativo e marca o burst pendente. */
+function checkLevelUp(s: State) {
+  const p = s.profiles.find((x) => x.id === s.activeId)
+  if (!p) return
+  const lv = levelFor(pointsOf(s, p.id))
+  if (p.level == null) p.level = lv
+  else if (lv > p.level) {
+    p.level = lv
+    s.pendingLevelUp = lv
+  }
+}
+
 export const useStore = create<Store>()(
   persist(
     immer((set) => ({
@@ -62,8 +83,10 @@ export const useStore = create<Store>()(
       scores: {},
       sessions: {},
       measures: {},
+      pendingLevelUp: null,
 
       setActive: (id) => set((s) => { s.activeId = id }),
+      clearLevelUp: () => set((s) => { s.pendingLevelUp = null }),
 
       setTheme: (theme) =>
         set((s) => {
@@ -79,6 +102,7 @@ export const useStore = create<Store>()(
           if (!cell) return
           cell.done = !cell.done
           addPointsOn(s, id, todayISO(), cell.done ? PTS_SET : -PTS_SET)
+          checkLevelUp(s)
         }),
 
       setSetValue: (w, exIdx, setIdx, field, value) =>
@@ -119,6 +143,7 @@ export const useStore = create<Store>()(
             ...(exercises.length ? { exercises } : {}),
           })
           addPointsOn(s, id, today, PTS_TREINO)
+          checkLevelUp(s)
           // limpa a sessão concluída
           if (s.sessions[id]) delete s.sessions[id][w]
         })
@@ -144,8 +169,52 @@ export const useStore = create<Store>()(
         set((s) => {
           s.measures[profileId]?.splice(index, 1)
         }),
+
+      claimQuests: () =>
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (!p) return
+          const wk = weekStartISO()
+          if (!p.quests) p.quests = { week: '', claimed: {} }
+          if (p.quests.week !== wk) {
+            p.quests.week = wk
+            p.quests.claimed = {}
+          }
+          const hist = (s.history[p.id] ?? []).filter((e) => e.date >= wk)
+          const prog: Record<string, number> = {
+            treino: hist.filter((e) => e.w === 'A' || e.w === 'B' || e.w === 'C').length,
+            cardio: hist.filter((e) => e.w === 'cardio').length,
+            measure: (s.measures[p.id] ?? []).filter((m) => m.date >= wk).length,
+          }
+          for (const q of QUESTS) {
+            if (!p.quests.claimed[q.id] && prog[q.kind] >= q.goal) {
+              p.quests.claimed[q.id] = true
+              addPointsOn(s, p.id, todayISO(), q.reward)
+              if (q.freeze) p.freezes = (p.freezes ?? 0) + 1
+            }
+          }
+          checkLevelUp(s)
+        }),
     })),
-    { name: 'home-gym-v2' },
+    {
+      name: 'home-gym-v2',
+      version: 1,
+      migrate: (persisted) => {
+        const st = persisted as { profiles?: Array<Record<string, unknown>> } & Record<string, unknown>
+        if (Array.isArray(st.profiles)) {
+          st.profiles = st.profiles.map((p) => ({
+            photo: null,
+            equipment: ['bodyweight', 'dumbbell'],
+            theme: 'default',
+            level: 1,
+            freezes: 0,
+            quests: { week: '', claimed: {} },
+            ...p,
+          }))
+        }
+        return st as unknown as Store
+      },
+    },
   ),
 )
 
