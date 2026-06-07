@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+
+/* Mapeia as variáveis de tema -> tokens Tailwind.
+   Assim `bg-bg`, `bg-surface`, `text-fg`, `text-accent`... seguem o tema em runtime. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-done: var(--done);
+  --font-display: 'Anton', system-ui, sans-serif;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+}
+
+/* Tema padrão — sobrescrito em runtime por applyTheme() (src/lib/themes.ts) */
+:root {
+  --bg: #0d0f12;
+  --surface: #15181d;
+  --surface-2: #1c2027;
+  --line: #2a2f37;
+  --text: #eef1f5;
+  --muted: #8b94a3;
+  --accent: #c6ff3a;
+  --on-accent: #0d0f12;
+  --done: #3ddc84;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none; /* sem rubber-band/scroll-chaining no fundo */
+}
