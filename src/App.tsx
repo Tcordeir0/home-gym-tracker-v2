@@ -9,6 +9,8 @@ import { HistoryModal } from '@/components/HistoryModal'
 import { MeasuresModal } from '@/components/MeasuresModal'
 import { ChartsModal } from '@/components/ChartsModal'
 import { RewardsModal } from '@/components/RewardsModal'
+import { AgendaModal } from '@/components/AgendaModal'
+import { TodayBanner } from '@/components/TodayBanner'
 import { LevelUpBurst } from '@/components/LevelUpBurst'
 import { Toaster } from '@/components/ui/Toaster'
 
@@ -21,6 +23,7 @@ export default function App() {
   const [chartsOpen, setChartsOpen] = useState(false)
   const [rewardsOpen, setRewardsOpen] = useState(false)
   const [cloudOpen, setCloudOpen] = useState(false)
+  const [agendaOpen, setAgendaOpen] = useState(false)
 
   useEffect(() => {
     applyTheme(theme)
@@ -37,6 +40,7 @@ export default function App() {
         onOpenRewards={() => setRewardsOpen(true)}
         onOpenCloud={() => setCloudOpen(true)}
       />
+      <TodayBanner />
       <main className="mt-4">
         <WorkoutScreen />
       </main>
@@ -49,7 +53,12 @@ export default function App() {
       />
       <MeasuresModal open={measuresOpen} onClose={() => setMeasuresOpen(false)} />
       <ChartsModal open={chartsOpen} onClose={() => setChartsOpen(false)} />
-      <RewardsModal open={rewardsOpen} onClose={() => setRewardsOpen(false)} />
+      <RewardsModal
+        open={rewardsOpen}
+        onClose={() => setRewardsOpen(false)}
+        onOpenAgenda={() => setAgendaOpen(true)}
+      />
+      <AgendaModal open={agendaOpen} onClose={() => setAgendaOpen(false)} />
       <CloudModal open={cloudOpen} onClose={() => setCloudOpen(false)} />
       <LevelUpBurst />
       <Toaster />

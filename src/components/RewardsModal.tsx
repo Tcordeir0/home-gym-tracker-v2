@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Check } from 'lucide-react'
+import { Check, CalendarClock } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { useStore, totalPoints } from '@/store'
 import { levelInfo, statsFor, ACHIEVEMENTS, QUESTS, weekStartISO } from '@/lib/game'
@@ -26,7 +26,15 @@ function ThemeChip({ id, equipped, onPick }: { id: string; equipped: boolean; on
   )
 }
 
-export function RewardsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function RewardsModal({
+  open,
+  onClose,
+  onOpenAgenda,
+}: {
+  open: boolean
+  onClose: () => void
+  onOpenAgenda: () => void
+}) {
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
   const activeId = useStore((s) => s.activeId)
   const scores = useStore((s) => s.scores)
@@ -125,6 +133,13 @@ export function RewardsModal({ open, onClose }: { open: boolean; onClose: () => 
           <ThemeChip key={id} id={id} equipped={active.theme === id} onPick={() => setTheme(id)} />
         ))}
       </div>
+
+      <button
+        onClick={onOpenAgenda}
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg"
+      >
+        <CalendarClock size={16} /> Agenda e lembretes
+      </button>
     </Modal>
   )
 }
