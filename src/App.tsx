@@ -4,6 +4,8 @@ import { applyTheme } from '@/lib/themes'
 import { Header } from '@/components/Header'
 import { WorkoutScreen } from '@/components/WorkoutScreen'
 import { HistoryModal } from '@/components/HistoryModal'
+import { MeasuresModal } from '@/components/MeasuresModal'
+import { ChartsModal } from '@/components/ChartsModal'
 import { Toaster } from '@/components/ui/Toaster'
 
 export default function App() {
@@ -11,6 +13,8 @@ export default function App() {
     (s) => s.profiles.find((p) => p.id === s.activeId)?.theme ?? 'default',
   )
   const [histOpen, setHistOpen] = useState(false)
+  const [measuresOpen, setMeasuresOpen] = useState(false)
+  const [chartsOpen, setChartsOpen] = useState(false)
 
   useEffect(() => {
     applyTheme(theme)
@@ -22,7 +26,15 @@ export default function App() {
       <main className="mt-4">
         <WorkoutScreen />
       </main>
-      <HistoryModal open={histOpen} onClose={() => setHistOpen(false)} />
+
+      <HistoryModal
+        open={histOpen}
+        onClose={() => setHistOpen(false)}
+        onOpenMeasures={() => setMeasuresOpen(true)}
+        onOpenCharts={() => setChartsOpen(true)}
+      />
+      <MeasuresModal open={measuresOpen} onClose={() => setMeasuresOpen(false)} />
+      <ChartsModal open={chartsOpen} onClose={() => setChartsOpen(false)} />
       <Toaster />
     </div>
   )
