@@ -10,7 +10,7 @@ export function ShareModal({ open, onClose }: { open: boolean; onClose: () => vo
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
   const activeId = useStore((s) => s.activeId)
   const scores = useStore((s) => s.scores)
-  const history = useStore((s) => s.history[s.activeId] ?? [])
+  const history = useStore((s) => s.history[s.activeId]) ?? []
   const show = useToast((s) => s.show)
   const [url, setUrl] = useState<string | null>(null)
   const blobRef = useRef<Blob | null>(null)
