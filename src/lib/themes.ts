@@ -55,8 +55,52 @@ const KEYS: Array<[keyof ThemeVars, string]> = [
   ['text', '--text'], ['muted', '--muted'], ['accent', '--accent'], ['onAccent', '--on-accent'],
 ]
 
+/* Estilo de textura ambiente por tema (mostra sutil no fundo, atrás dos cards). */
+type TexStyle = 'dots' | 'grid' | 'scanline' | 'grain' | 'stars' | 'speckle'
+const TEX_STYLE: Record<string, TexStyle> = {
+  default: 'dots', blocos: 'speckle', neon: 'grid', monstros: 'speckle', cinza: 'grain',
+  lava: 'speckle', oceano: 'dots', dourado: 'speckle', vaporwave: 'grid', hq: 'dots',
+  cyber: 'scanline', noir: 'grain', cosmico: 'stars', anime: 'dots',
+}
+
+function svg(inner: string, w: number, h: number) {
+  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>${inner}</svg>`)}")`
+}
+
+function buildTexture(style: TexStyle, c: string): string {
+  switch (style) {
+    case 'dots':
+      return svg(`<circle cx='6' cy='6' r='1.6' fill='${c}'/><circle cx='20' cy='20' r='1.6' fill='${c}'/>`, 28, 28)
+    case 'grid':
+      return svg(`<path d='M34 0H0V34' fill='none' stroke='${c}' stroke-width='1'/>`, 34, 34)
+    case 'scanline':
+      return svg(`<rect width='6' height='1.2' fill='${c}'/>`, 6, 6)
+    case 'grain':
+      return svg(
+        [
+          [4, 7], [11, 2], [19, 14], [27, 5], [33, 22], [8, 25], [22, 30], [16, 9],
+          [30, 33], [2, 18], [25, 19], [13, 35], [36, 12], [6, 34],
+        ]
+          .map(([x, y]) => `<rect x='${x}' y='${y}' width='1.4' height='1.4' fill='${c}'/>`)
+          .join(''),
+        40, 40,
+      )
+    case 'stars':
+      return svg(
+        `<circle cx='10' cy='12' r='1' fill='${c}'/><circle cx='40' cy='8' r='1.8' fill='${c}'/><circle cx='28' cy='34' r='1' fill='${c}'/><circle cx='52' cy='44' r='1.4' fill='${c}'/><circle cx='18' cy='50' r='0.9' fill='${c}'/><circle cx='46' cy='22' r='0.9' fill='${c}'/>`,
+        60, 60,
+      )
+    case 'speckle':
+      return svg(
+        `<rect x='5' y='8' width='2' height='2' fill='${c}'/><rect x='18' y='4' width='2' height='2' fill='${c}'/><rect x='12' y='20' width='2' height='2' fill='${c}'/><rect x='24' y='24' width='2' height='2' fill='${c}'/><rect x='28' y='12' width='2' height='2' fill='${c}'/>`,
+        32, 32,
+      )
+  }
+}
+
 export function applyTheme(id: string) {
   const theme = THEMES[id] ?? THEMES.default
   const root = document.documentElement.style
   for (const [k, cssVar] of KEYS) root.setProperty(cssVar, theme.vars[k])
+  root.setProperty('--tex', buildTexture(TEX_STYLE[id] ?? 'dots', theme.vars.accent))
 }
