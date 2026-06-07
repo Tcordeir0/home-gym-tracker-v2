@@ -47,6 +47,17 @@ body {
   overscroll-behavior-y: none; /* sem rubber-band/scroll-chaining no fundo */
 }
 
+/* textura ambiente do tema (atrás do conteúdo, bem sutil) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--tex);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
 /* sem setinhas nos inputs numéricos (kg/reps) */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
