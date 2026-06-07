@@ -1,5 +1,7 @@
-import { Medal } from 'lucide-react'
+import { Eye, Medal, Play } from 'lucide-react'
 import { useStore } from '@/store'
+import { useDemo } from '@/lib/demo'
+import { DEMOS, ytLink } from '@/data/demos'
 import { playSound, haptic } from '@/lib/feedback'
 import { cn } from '@/lib/utils'
 import type { Exercise, HistoryEntry, WorkoutKey } from '@/types'
@@ -32,6 +34,7 @@ export function ExerciseCard({
   const history = useStore((s) => s.history[s.activeId])
   const toggleSet = useStore((s) => s.toggleSet)
   const setSetValue = useStore((s) => s.setSetValue)
+  const openDemo = useDemo((s) => s.open)
 
   const sets = session ?? Array.from({ length: ex.series }, () => ({ done: false }) as const)
   const lp = withLoad ? lastPerf(history ?? [], ex.nome) : null
@@ -126,6 +129,25 @@ export function ExerciseCard({
             )}
           </div>
         ))}
+      </div>
+
+      <div className="mt-3 flex gap-2">
+        {DEMOS[ex.nome] && (
+          <button
+            onClick={() => openDemo({ nome: ex.nome, musculo: ex.musculo })}
+            className="flex items-center gap-1.5 rounded-full border border-line bg-surface2 px-3 py-1.5 text-xs font-bold text-fg"
+          >
+            <Eye size={14} /> Demo
+          </button>
+        )}
+        <a
+          href={ytLink(ex.nome)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-full border border-line bg-surface2 px-3 py-1.5 text-xs font-bold text-fg"
+        >
+          <Play size={14} className="text-red-500" /> Vídeo
+        </a>
       </div>
     </article>
   )
