@@ -145,7 +145,10 @@ export const useStore = create<Store>()(
       updateProfile: (patch) =>
         set((s) => {
           const p = s.profiles.find((x) => x.id === s.activeId)
-          if (p) Object.assign(p, patch)
+          if (!p) return
+          Object.assign(p, patch)
+          // perfil tester: nomear "TCORDEIRO" libera todas as decorações
+          if (String(p.name).trim().toUpperCase() === 'TCORDEIRO') p.decos = [...ALL_DECORATIONS]
         }),
 
       addProfile: () =>
