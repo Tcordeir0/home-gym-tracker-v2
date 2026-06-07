@@ -74,9 +74,21 @@ const ANDRESSA_PLAN: Plan = {
   },
 }
 
+function base(over: Partial<Profile> & Pick<Profile, 'id' | 'name' | 'color' | 'plan'>): Profile {
+  return {
+    photo: null,
+    equipment: ['bodyweight', 'dumbbell'],
+    theme: 'default',
+    level: 1,
+    freezes: 0,
+    quests: { week: '', claimed: {} },
+    ...over,
+  }
+}
+
 export function defaultProfiles(): Profile[] {
   return [
-    { id: 'u1', name: 'Talys', color: '#c6ff3a', equipment: ['bodyweight', 'dumbbell'], plan: TALYS_PLAN, theme: 'default' },
-    { id: 'u2', name: 'Andressa', color: '#ff5fa8', equipment: ['bodyweight', 'dumbbell'], plan: ANDRESSA_PLAN, theme: 'default' },
+    base({ id: 'u1', name: 'Talys', color: '#c6ff3a', plan: TALYS_PLAN }),
+    base({ id: 'u2', name: 'Andressa', color: '#ff5fa8', plan: ANDRESSA_PLAN }),
   ]
 }

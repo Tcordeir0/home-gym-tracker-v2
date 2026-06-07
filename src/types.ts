@@ -17,6 +17,8 @@ export type Plan = {
   treinos: Record<WorkoutKey, Exercise[]>
 }
 
+export type Quests = { week: string; claimed: Record<string, boolean> }
+
 export type Profile = {
   id: string
   name: string
@@ -24,7 +26,10 @@ export type Profile = {
   photo?: string | null
   equipment: string[]
   plan: Plan
-  theme: string // id do tema cosmético equipado ('default' = padrão)
+  theme: string // id do tema equipado ('default' = padrão)
+  level: number
+  freezes: number
+  quests: Quests
 }
 
 /** Uma série lançada: feita? com quanta carga e reps. */
