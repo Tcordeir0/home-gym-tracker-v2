@@ -48,6 +48,10 @@ type Actions = {
   resetPoints: () => void
   spinRoulette: () => string | null
   setDeco: (id: string | null) => void
+  registerManual: (
+    sel: { type: 'treino'; key: 'A' | 'B' | 'C' } | { type: 'cardio'; label: string; emoji: string },
+    date: string,
+  ) => 'ok' | 'dup'
 }
 
 export type Store = State & Actions
@@ -108,6 +112,26 @@ export const useStore = create<Store>()(
           const p = s.profiles.find((x) => x.id === s.activeId)
           if (p) p.deco = id
         }),
+      registerManual: (sel, date) => {
+        let res: 'ok' | 'dup' = 'ok'
+        set((s) => {
+          const id = s.activeId
+          s.history[id] ??= []
+          if (sel.type === 'treino') {
+            if (s.history[id].some((e) => e.date === date && e.w === sel.key)) {
+              res = 'dup'
+              return
+            }
+            s.history[id].push({ date, w: sel.key, pts: PTS_TREINO })
+            addPointsOn(s, id, date, PTS_TREINO)
+          } else {
+            s.history[id].push({ date, w: 'cardio', t: sel.label, emoji: sel.emoji, pts: PTS_CARDIO })
+            addPointsOn(s, id, date, PTS_CARDIO)
+          }
+          checkLevelUp(s)
+        })
+        return res
+      },
       spinRoulette: () => {
         let won: string | null = null
         set((s) => {

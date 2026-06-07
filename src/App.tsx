@@ -8,6 +8,7 @@ import { WorkoutScreen } from '@/components/WorkoutScreen'
 import { HistoryModal } from '@/components/HistoryModal'
 import { MeasuresModal } from '@/components/MeasuresModal'
 import { ChartsModal } from '@/components/ChartsModal'
+import { ManualRegisterModal } from '@/components/ManualRegisterModal'
 import { RewardsModal } from '@/components/RewardsModal'
 import { AgendaModal } from '@/components/AgendaModal'
 import { ProfileEditorModal } from '@/components/ProfileEditorModal'
@@ -27,6 +28,7 @@ export default function App() {
   const [histOpen, setHistOpen] = useState(false)
   const [measuresOpen, setMeasuresOpen] = useState(false)
   const [chartsOpen, setChartsOpen] = useState(false)
+  const [manualOpen, setManualOpen] = useState(false)
   const [rewardsOpen, setRewardsOpen] = useState(false)
   const [cloudOpen, setCloudOpen] = useState(false)
   const [agendaOpen, setAgendaOpen] = useState(false)
@@ -67,9 +69,11 @@ export default function App() {
         onClose={() => setHistOpen(false)}
         onOpenMeasures={() => setMeasuresOpen(true)}
         onOpenCharts={() => setChartsOpen(true)}
+        onOpenManual={() => setManualOpen(true)}
       />
       <MeasuresModal open={measuresOpen} onClose={() => setMeasuresOpen(false)} />
       <ChartsModal open={chartsOpen} onClose={() => setChartsOpen(false)} />
+      <ManualRegisterModal open={manualOpen} onClose={() => setManualOpen(false)} />
       <RewardsModal
         open={rewardsOpen}
         onClose={() => setRewardsOpen(false)}
