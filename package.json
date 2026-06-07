@@ -1,7 +1,7 @@
 {
   "name": "home-gym-tracker-v2",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Ficha de treino em casa que virou jogo de saúde — React + TS + Tailwind + Supabase.",
   "author": "Talys Cordeiro",
