@@ -34,6 +34,7 @@ type Actions = {
   deleteMeasure: (profileId: string, index: number) => void
   clearLevelUp: () => void
   claimQuests: () => void
+  setSchedule: (days: number[], time: string) => void
 }
 
 export type Store = State & Actions
@@ -87,6 +88,11 @@ export const useStore = create<Store>()(
 
       setActive: (id) => set((s) => { s.activeId = id }),
       clearLevelUp: () => set((s) => { s.pendingLevelUp = null }),
+      setSchedule: (days, time) =>
+        set((s) => {
+          const p = s.profiles.find((x) => x.id === s.activeId)
+          if (p) p.schedule = { days, time }
+        }),
 
       setTheme: (theme) =>
         set((s) => {

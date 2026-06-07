@@ -18,6 +18,7 @@ export type Plan = {
 }
 
 export type Quests = { week: string; claimed: Record<string, boolean> }
+export type Schedule = { days: number[]; time: string } // days: 0=Dom..6=Sáb
 
 export type Profile = {
   id: string
@@ -30,6 +31,7 @@ export type Profile = {
   level: number
   freezes: number
   quests: Quests
+  schedule?: Schedule
 }
 
 /** Uma série lançada: feita? com quanta carga e reps. */
