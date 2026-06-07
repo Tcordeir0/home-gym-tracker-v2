@@ -46,3 +46,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none; /* sem rubber-band/scroll-chaining no fundo */
 }
+
+/* sem setinhas nos inputs numéricos (kg/reps) */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
