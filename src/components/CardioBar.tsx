@@ -1,6 +1,7 @@
 import { useStore, PTS_CARDIO } from '@/store'
 import { DEFAULT_CARDIOS } from '@/types'
 import { useToast } from '@/lib/toast'
+import { playSound } from '@/lib/feedback'
 
 export function CardioBar() {
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
@@ -15,6 +16,7 @@ export function CardioBar() {
           key={c.label}
           onClick={() => {
             addCardio(c.label, c.emoji)
+            playSound('win')
             show(`${c.emoji} ${c.label} · +${PTS_CARDIO} pts!`)
           }}
           className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold text-fg transition-transform active:scale-95"

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Check, CalendarClock } from 'lucide-react'
+import { Check, CalendarClock, Settings, Share2 } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { useStore, totalPoints } from '@/store'
 import { levelInfo, statsFor, ACHIEVEMENTS, QUESTS, weekStartISO } from '@/lib/game'
@@ -30,10 +30,14 @@ export function RewardsModal({
   open,
   onClose,
   onOpenAgenda,
+  onOpenSettings,
+  onOpenShare,
 }: {
   open: boolean
   onClose: () => void
   onOpenAgenda: () => void
+  onOpenSettings: () => void
+  onOpenShare: () => void
 }) {
   const active = useStore((s) => s.profiles.find((p) => p.id === s.activeId)!)
   const activeId = useStore((s) => s.activeId)
@@ -135,11 +139,19 @@ export function RewardsModal({
       </div>
 
       <button
-        onClick={onOpenAgenda}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg"
+        onClick={onOpenShare}
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-extrabold text-on-accent"
       >
-        <CalendarClock size={16} /> Agenda e lembretes
+        <Share2 size={16} /> Compartilhar conquista
       </button>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <button onClick={onOpenAgenda} className="flex items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg">
+          <CalendarClock size={16} /> Agenda
+        </button>
+        <button onClick={onOpenSettings} className="flex items-center justify-center gap-2 rounded-xl border border-line bg-surface py-3 text-sm font-bold text-fg">
+          <Settings size={16} /> Config.
+        </button>
+      </div>
     </Modal>
   )
 }

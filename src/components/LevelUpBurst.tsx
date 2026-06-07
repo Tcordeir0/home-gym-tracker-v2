@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useStore } from '@/store'
+import { playSound, haptic } from '@/lib/feedback'
 
 const SPARKS = Array.from({ length: 16 }, (_, i) => {
   const ang = (Math.PI * 2 * i) / 16
@@ -14,6 +15,8 @@ export function LevelUpBurst() {
 
   useEffect(() => {
     if (lv == null) return
+    playSound('win')
+    haptic([20, 40, 20])
     const t = setTimeout(clear, 2200)
     return () => clearTimeout(t)
   }, [lv, clear])

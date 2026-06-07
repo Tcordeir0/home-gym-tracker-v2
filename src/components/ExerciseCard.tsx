@@ -1,5 +1,6 @@
 import { Medal } from 'lucide-react'
 import { useStore } from '@/store'
+import { playSound, haptic } from '@/lib/feedback'
 import { cn } from '@/lib/utils'
 import type { Exercise, HistoryEntry, WorkoutKey } from '@/types'
 
@@ -76,7 +77,13 @@ export function ExerciseCard({
         {sets.map((st, i) => (
           <div key={i} className="flex items-center gap-2">
             <button
-              onClick={() => toggleSet(w, exIdx, i)}
+              onClick={() => {
+                if (!st.done) {
+                  playSound('ding')
+                  haptic(15)
+                }
+                toggleSet(w, exIdx, i)
+              }}
               className={cn(
                 'grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border text-sm font-extrabold transition-transform active:scale-90',
                 st.done

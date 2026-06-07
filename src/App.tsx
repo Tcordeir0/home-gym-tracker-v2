@@ -12,6 +12,8 @@ import { RewardsModal } from '@/components/RewardsModal'
 import { AgendaModal } from '@/components/AgendaModal'
 import { ProfileEditorModal } from '@/components/ProfileEditorModal'
 import { GeneratorModal } from '@/components/GeneratorModal'
+import { SettingsModal } from '@/components/SettingsModal'
+import { ShareModal } from '@/components/ShareModal'
 import { TodayBanner } from '@/components/TodayBanner'
 import { CardioBar } from '@/components/CardioBar'
 import { LevelUpBurst } from '@/components/LevelUpBurst'
@@ -29,6 +31,8 @@ export default function App() {
   const [agendaOpen, setAgendaOpen] = useState(false)
   const [editorOpen, setEditorOpen] = useState(false)
   const [generatorOpen, setGeneratorOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
   const addProfile = useStore((s) => s.addProfile)
 
   useEffect(() => {
@@ -69,6 +73,8 @@ export default function App() {
         open={rewardsOpen}
         onClose={() => setRewardsOpen(false)}
         onOpenAgenda={() => setAgendaOpen(true)}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenShare={() => setShareOpen(true)}
       />
       <AgendaModal open={agendaOpen} onClose={() => setAgendaOpen(false)} />
       <ProfileEditorModal
@@ -77,6 +83,8 @@ export default function App() {
         onOpenGenerator={() => setGeneratorOpen(true)}
       />
       <GeneratorModal open={generatorOpen} onClose={() => setGeneratorOpen(false)} />
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
       <CloudModal open={cloudOpen} onClose={() => setCloudOpen(false)} />
       <LevelUpBurst />
       <Toaster />

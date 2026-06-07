@@ -23,6 +23,7 @@ type State = {
   sessions: Record<string, Record<string, Session>>
   measures: Record<string, Measure[]>
   pendingLevelUp: number | null
+  feedback: 'both' | 'sound' | 'vibrate' | 'none'
 }
 
 type Actions = {
@@ -42,6 +43,8 @@ type Actions = {
   addProfile: () => void
   deleteProfile: (id: string) => void
   setPlan: (plan: Plan) => void
+  setFeedback: (mode: State['feedback']) => void
+  resetPoints: () => void
 }
 
 export type Store = State & Actions
@@ -92,8 +95,11 @@ export const useStore = create<Store>()(
       sessions: {},
       measures: {},
       pendingLevelUp: null,
+      feedback: 'both',
 
       setActive: (id) => set((s) => { s.activeId = id }),
+      setFeedback: (mode) => set((s) => { s.feedback = mode }),
+      resetPoints: () => set((s) => { s.scores[s.activeId] = { byDay: {} } }),
       clearLevelUp: () => set((s) => { s.pendingLevelUp = null }),
       setSchedule: (days, time) =>
         set((s) => {

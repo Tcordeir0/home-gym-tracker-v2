@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import { useStore } from '@/store'
 import { useToast } from '@/lib/toast'
+import { playSound } from '@/lib/feedback'
 import { cn } from '@/lib/utils'
 import { ExerciseCard } from './ExerciseCard'
 import type { WorkoutKey } from '@/types'
@@ -30,6 +31,7 @@ export function WorkoutScreen() {
 
   function onConclude() {
     const r = conclude(tab as 'A' | 'B' | 'C')
+    if (r === 'ok') playSound('win')
     show(r === 'dup' ? `Treino ${tab} já concluído hoje ✅` : `Treino ${tab} concluído · +50 pts! 🔥`)
   }
 
