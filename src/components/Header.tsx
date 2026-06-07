@@ -1,17 +1,22 @@
-import { CalendarDays, Cloud, Sparkles, Star } from 'lucide-react'
+import { CalendarDays, Cloud, Plus, Sparkles, Star } from 'lucide-react'
 import { useStore, totalPoints } from '@/store'
 import { useAuth } from '@/lib/sync'
 import { levelFor } from '@/lib/game'
 import { cn } from '@/lib/utils'
+import { Avatar } from './ui/Avatar'
 
 export function Header({
   onOpenHistory,
   onOpenRewards,
   onOpenCloud,
+  onOpenEditor,
+  onAddProfile,
 }: {
   onOpenHistory: () => void
   onOpenRewards: () => void
   onOpenCloud: () => void
+  onOpenEditor: () => void
+  onAddProfile: () => void
 }) {
   const profiles = useStore((s) => s.profiles)
   const activeId = useStore((s) => s.activeId)
@@ -59,21 +64,23 @@ export function Header({
         {profiles.map((p) => (
           <button
             key={p.id}
-            onClick={() => setActive(p.id)}
+            onClick={() => (p.id === activeId ? onOpenEditor() : setActive(p.id))}
             className={cn(
               'flex shrink-0 items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3.5 text-sm font-bold transition-colors',
               p.id === activeId ? 'border-accent text-fg' : 'border-line text-muted',
             )}
           >
-            <span
-              className="grid h-7 w-7 place-items-center rounded-full text-xs font-black text-black"
-              style={{ background: p.color }}
-            >
-              {p.name[0]?.toUpperCase()}
-            </span>
+            <Avatar profile={p} size={28} />
             {p.name}
           </button>
         ))}
+        <button
+          onClick={onAddProfile}
+          aria-label="Novo perfil"
+          className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full border border-line text-muted"
+        >
+          <Plus size={18} />
+        </button>
       </div>
 
       <div className="mt-3 text-center">
